@@ -1,10 +1,10 @@
 package com.andwati.orders.config;
 
 
-import com.andwati.orders.model.InventoryItem;
-import com.andwati.orders.model.OrderItem;
-import com.andwati.orders.model.OrderStatus;
-import com.andwati.orders.model.Product;
+import com.andwati.orders.model.*;
+import com.andwati.orders.repository.InventoryItemRepository;
+import com.andwati.orders.repository.OrderRepository;
+import com.andwati.orders.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
