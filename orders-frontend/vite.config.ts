@@ -8,6 +8,7 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 
+// @ts-ignore
 const config = defineConfig({
   plugins: [
     devtools(),
