@@ -7,6 +7,7 @@ import com.andwati.orders.dto.response.OrderSummaryResponse;
 import com.andwati.orders.dto.response.PageResponse;
 import com.andwati.orders.model.OrderStatus;
 import com.andwati.orders.services.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Tag(name = "Orders", description = "Place, list, view, and cancel orders")
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {

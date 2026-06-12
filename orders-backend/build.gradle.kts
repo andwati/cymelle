@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.1.0"
+    id("org.springframework.boot") version "3.5.15"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -36,6 +36,9 @@ dependencies {
 
     // dotenv
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
+
+    //swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16")
 }
 
 tasks.withType<Test> {

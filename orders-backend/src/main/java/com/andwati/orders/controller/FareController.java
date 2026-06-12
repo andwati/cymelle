@@ -2,6 +2,7 @@ package com.andwati.orders.controller;
 
 import com.andwati.orders.dto.response.FareCalculationResponse;
 import com.andwati.orders.services.FareCalculationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+
+@Tag(name = "Fare", description = "Calculate trip fares")
 
 @Validated
 @RestController
