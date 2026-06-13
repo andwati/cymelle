@@ -9,38 +9,451 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RidesRouteImport } from './routes/rides'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RidesIndexRouteImport } from './routes/rides.index'
+import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as RidesNewRouteImport } from './routes/rides.new'
+import { Route as ProductsFeaturedRouteImport } from './routes/products.featured'
+import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
+import { Route as OrdersStatusRouteImport } from './routes/orders.status'
+import { Route as DriverRidesRouteImport } from './routes/driver.rides'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminRidesRouteImport } from './routes/admin.rides'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
+import { Route as AdminDriversRouteImport } from './routes/admin.drivers'
+import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
+import { Route as DriverRidesIndexRouteImport } from './routes/driver.rides.index'
+import { Route as AdminRidesIndexRouteImport } from './routes/admin.rides.index'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin.products.index'
+import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as DriverRidesRequestedRouteImport } from './routes/driver.rides.requested'
+import { Route as DriverRidesCompletedRouteImport } from './routes/driver.rides.completed'
+import { Route as DriverRidesAcceptedRouteImport } from './routes/driver.rides.accepted'
+import { Route as AdminRidesRequestedRouteImport } from './routes/admin.rides.requested'
+import { Route as AdminRidesAcceptedRouteImport } from './routes/admin.rides.accepted'
+import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
+import { Route as AdminOrdersPendingRouteImport } from './routes/admin.orders.pending'
 
+const RidesRoute = RidesRouteImport.update({
+  id: '/rides',
+  path: '/rides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RidesIndexRoute = RidesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RidesRoute,
+} as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const RidesNewRoute = RidesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => RidesRoute,
+} as any)
+const ProductsFeaturedRoute = ProductsFeaturedRouteImport.update({
+  id: '/featured',
+  path: '/featured',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
+  id: '/$productId',
+  path: '/$productId',
+  getParentRoute: () => ProductsRoute,
+} as any)
+const OrdersStatusRoute = OrdersStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => OrdersRoute,
+} as any)
+const DriverRidesRoute = DriverRidesRouteImport.update({
+  id: '/driver/rides',
+  path: '/driver/rides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRidesRoute = AdminRidesRouteImport.update({
+  id: '/rides',
+  path: '/rides',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDriversRoute = AdminDriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCustomersRoute = AdminCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const DriverRidesIndexRoute = DriverRidesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DriverRidesRoute,
+} as any)
+const AdminRidesIndexRoute = AdminRidesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRidesRoute,
+} as any)
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminProductsRoute,
+} as any)
+const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminOrdersRoute,
+} as any)
+const DriverRidesRequestedRoute = DriverRidesRequestedRouteImport.update({
+  id: '/requested',
+  path: '/requested',
+  getParentRoute: () => DriverRidesRoute,
+} as any)
+const DriverRidesCompletedRoute = DriverRidesCompletedRouteImport.update({
+  id: '/completed',
+  path: '/completed',
+  getParentRoute: () => DriverRidesRoute,
+} as any)
+const DriverRidesAcceptedRoute = DriverRidesAcceptedRouteImport.update({
+  id: '/accepted',
+  path: '/accepted',
+  getParentRoute: () => DriverRidesRoute,
+} as any)
+const AdminRidesRequestedRoute = AdminRidesRequestedRouteImport.update({
+  id: '/requested',
+  path: '/requested',
+  getParentRoute: () => AdminRidesRoute,
+} as any)
+const AdminRidesAcceptedRoute = AdminRidesAcceptedRouteImport.update({
+  id: '/accepted',
+  path: '/accepted',
+  getParentRoute: () => AdminRidesRoute,
+} as any)
+const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminProductsRoute,
+} as any)
+const AdminOrdersPendingRoute = AdminOrdersPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AdminOrdersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/cart': typeof CartRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
+  '/rides': typeof RidesRouteWithChildren
+  '/admin/customers': typeof AdminCustomersRoute
+  '/admin/drivers': typeof AdminDriversRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/rides': typeof AdminRidesRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
+  '/driver/rides': typeof DriverRidesRouteWithChildren
+  '/orders/status': typeof OrdersStatusRoute
+  '/products/$productId': typeof ProductsProductIdRoute
+  '/products/featured': typeof ProductsFeaturedRoute
+  '/rides/new': typeof RidesNewRoute
+  '/admin/': typeof AdminIndexRoute
+  '/orders/': typeof OrdersIndexRoute
+  '/products/': typeof ProductsIndexRoute
+  '/rides/': typeof RidesIndexRoute
+  '/admin/orders/pending': typeof AdminOrdersPendingRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/rides/accepted': typeof AdminRidesAcceptedRoute
+  '/admin/rides/requested': typeof AdminRidesRequestedRoute
+  '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
+  '/driver/rides/completed': typeof DriverRidesCompletedRoute
+  '/driver/rides/requested': typeof DriverRidesRequestedRoute
+  '/admin/orders/': typeof AdminOrdersIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/rides/': typeof AdminRidesIndexRoute
+  '/driver/rides/': typeof DriverRidesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/admin/customers': typeof AdminCustomersRoute
+  '/admin/drivers': typeof AdminDriversRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/orders/status': typeof OrdersStatusRoute
+  '/products/$productId': typeof ProductsProductIdRoute
+  '/products/featured': typeof ProductsFeaturedRoute
+  '/rides/new': typeof RidesNewRoute
+  '/admin': typeof AdminIndexRoute
+  '/orders': typeof OrdersIndexRoute
+  '/products': typeof ProductsIndexRoute
+  '/rides': typeof RidesIndexRoute
+  '/admin/orders/pending': typeof AdminOrdersPendingRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/rides/accepted': typeof AdminRidesAcceptedRoute
+  '/admin/rides/requested': typeof AdminRidesRequestedRoute
+  '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
+  '/driver/rides/completed': typeof DriverRidesCompletedRoute
+  '/driver/rides/requested': typeof DriverRidesRequestedRoute
+  '/admin/orders': typeof AdminOrdersIndexRoute
+  '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/rides': typeof AdminRidesIndexRoute
+  '/driver/rides': typeof DriverRidesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/cart': typeof CartRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/products': typeof ProductsRouteWithChildren
+  '/rides': typeof RidesRouteWithChildren
+  '/admin/customers': typeof AdminCustomersRoute
+  '/admin/drivers': typeof AdminDriversRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/products': typeof AdminProductsRouteWithChildren
+  '/admin/rides': typeof AdminRidesRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
+  '/driver/rides': typeof DriverRidesRouteWithChildren
+  '/orders/status': typeof OrdersStatusRoute
+  '/products/$productId': typeof ProductsProductIdRoute
+  '/products/featured': typeof ProductsFeaturedRoute
+  '/rides/new': typeof RidesNewRoute
+  '/admin/': typeof AdminIndexRoute
+  '/orders/': typeof OrdersIndexRoute
+  '/products/': typeof ProductsIndexRoute
+  '/rides/': typeof RidesIndexRoute
+  '/admin/orders/pending': typeof AdminOrdersPendingRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/rides/accepted': typeof AdminRidesAcceptedRoute
+  '/admin/rides/requested': typeof AdminRidesRequestedRoute
+  '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
+  '/driver/rides/completed': typeof DriverRidesCompletedRoute
+  '/driver/rides/requested': typeof DriverRidesRequestedRoute
+  '/admin/orders/': typeof AdminOrdersIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/rides/': typeof AdminRidesIndexRoute
+  '/driver/rides/': typeof DriverRidesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/cart'
+    | '/orders'
+    | '/products'
+    | '/rides'
+    | '/admin/customers'
+    | '/admin/drivers'
+    | '/admin/inventory'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/rides'
+    | '/admin/users'
+    | '/driver/rides'
+    | '/orders/status'
+    | '/products/$productId'
+    | '/products/featured'
+    | '/rides/new'
+    | '/admin/'
+    | '/orders/'
+    | '/products/'
+    | '/rides/'
+    | '/admin/orders/pending'
+    | '/admin/products/new'
+    | '/admin/rides/accepted'
+    | '/admin/rides/requested'
+    | '/driver/rides/accepted'
+    | '/driver/rides/completed'
+    | '/driver/rides/requested'
+    | '/admin/orders/'
+    | '/admin/products/'
+    | '/admin/rides/'
+    | '/driver/rides/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cart'
+    | '/admin/customers'
+    | '/admin/drivers'
+    | '/admin/inventory'
+    | '/admin/users'
+    | '/orders/status'
+    | '/products/$productId'
+    | '/products/featured'
+    | '/rides/new'
+    | '/admin'
+    | '/orders'
+    | '/products'
+    | '/rides'
+    | '/admin/orders/pending'
+    | '/admin/products/new'
+    | '/admin/rides/accepted'
+    | '/admin/rides/requested'
+    | '/driver/rides/accepted'
+    | '/driver/rides/completed'
+    | '/driver/rides/requested'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/rides'
+    | '/driver/rides'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/cart'
+    | '/orders'
+    | '/products'
+    | '/rides'
+    | '/admin/customers'
+    | '/admin/drivers'
+    | '/admin/inventory'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/rides'
+    | '/admin/users'
+    | '/driver/rides'
+    | '/orders/status'
+    | '/products/$productId'
+    | '/products/featured'
+    | '/rides/new'
+    | '/admin/'
+    | '/orders/'
+    | '/products/'
+    | '/rides/'
+    | '/admin/orders/pending'
+    | '/admin/products/new'
+    | '/admin/rides/accepted'
+    | '/admin/rides/requested'
+    | '/driver/rides/accepted'
+    | '/driver/rides/completed'
+    | '/driver/rides/requested'
+    | '/admin/orders/'
+    | '/admin/products/'
+    | '/admin/rides/'
+    | '/driver/rides/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  CartRoute: typeof CartRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
+  ProductsRoute: typeof ProductsRouteWithChildren
+  RidesRoute: typeof RidesRouteWithChildren
+  DriverRidesRoute: typeof DriverRidesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/rides': {
+      id: '/rides'
+      path: '/rides'
+      fullPath: '/rides'
+      preLoaderRoute: typeof RidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +461,333 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rides/': {
+      id: '/rides/'
+      path: '/'
+      fullPath: '/rides/'
+      preLoaderRoute: typeof RidesIndexRouteImport
+      parentRoute: typeof RidesRoute
+    }
+    '/products/': {
+      id: '/products/'
+      path: '/'
+      fullPath: '/products/'
+      preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/orders/': {
+      id: '/orders/'
+      path: '/'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/rides/new': {
+      id: '/rides/new'
+      path: '/new'
+      fullPath: '/rides/new'
+      preLoaderRoute: typeof RidesNewRouteImport
+      parentRoute: typeof RidesRoute
+    }
+    '/products/featured': {
+      id: '/products/featured'
+      path: '/featured'
+      fullPath: '/products/featured'
+      preLoaderRoute: typeof ProductsFeaturedRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/products/$productId': {
+      id: '/products/$productId'
+      path: '/$productId'
+      fullPath: '/products/$productId'
+      preLoaderRoute: typeof ProductsProductIdRouteImport
+      parentRoute: typeof ProductsRoute
+    }
+    '/orders/status': {
+      id: '/orders/status'
+      path: '/status'
+      fullPath: '/orders/status'
+      preLoaderRoute: typeof OrdersStatusRouteImport
+      parentRoute: typeof OrdersRoute
+    }
+    '/driver/rides': {
+      id: '/driver/rides'
+      path: '/driver/rides'
+      fullPath: '/driver/rides'
+      preLoaderRoute: typeof DriverRidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/rides': {
+      id: '/admin/rides'
+      path: '/rides'
+      fullPath: '/admin/rides'
+      preLoaderRoute: typeof AdminRidesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/drivers': {
+      id: '/admin/drivers'
+      path: '/drivers'
+      fullPath: '/admin/drivers'
+      preLoaderRoute: typeof AdminDriversRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/customers': {
+      id: '/admin/customers'
+      path: '/customers'
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AdminCustomersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/driver/rides/': {
+      id: '/driver/rides/'
+      path: '/'
+      fullPath: '/driver/rides/'
+      preLoaderRoute: typeof DriverRidesIndexRouteImport
+      parentRoute: typeof DriverRidesRoute
+    }
+    '/admin/rides/': {
+      id: '/admin/rides/'
+      path: '/'
+      fullPath: '/admin/rides/'
+      preLoaderRoute: typeof AdminRidesIndexRouteImport
+      parentRoute: typeof AdminRidesRoute
+    }
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/'
+      fullPath: '/admin/products/'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof AdminProductsRoute
+    }
+    '/admin/orders/': {
+      id: '/admin/orders/'
+      path: '/'
+      fullPath: '/admin/orders/'
+      preLoaderRoute: typeof AdminOrdersIndexRouteImport
+      parentRoute: typeof AdminOrdersRoute
+    }
+    '/driver/rides/requested': {
+      id: '/driver/rides/requested'
+      path: '/requested'
+      fullPath: '/driver/rides/requested'
+      preLoaderRoute: typeof DriverRidesRequestedRouteImport
+      parentRoute: typeof DriverRidesRoute
+    }
+    '/driver/rides/completed': {
+      id: '/driver/rides/completed'
+      path: '/completed'
+      fullPath: '/driver/rides/completed'
+      preLoaderRoute: typeof DriverRidesCompletedRouteImport
+      parentRoute: typeof DriverRidesRoute
+    }
+    '/driver/rides/accepted': {
+      id: '/driver/rides/accepted'
+      path: '/accepted'
+      fullPath: '/driver/rides/accepted'
+      preLoaderRoute: typeof DriverRidesAcceptedRouteImport
+      parentRoute: typeof DriverRidesRoute
+    }
+    '/admin/rides/requested': {
+      id: '/admin/rides/requested'
+      path: '/requested'
+      fullPath: '/admin/rides/requested'
+      preLoaderRoute: typeof AdminRidesRequestedRouteImport
+      parentRoute: typeof AdminRidesRoute
+    }
+    '/admin/rides/accepted': {
+      id: '/admin/rides/accepted'
+      path: '/accepted'
+      fullPath: '/admin/rides/accepted'
+      preLoaderRoute: typeof AdminRidesAcceptedRouteImport
+      parentRoute: typeof AdminRidesRoute
+    }
+    '/admin/products/new': {
+      id: '/admin/products/new'
+      path: '/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewRouteImport
+      parentRoute: typeof AdminProductsRoute
+    }
+    '/admin/orders/pending': {
+      id: '/admin/orders/pending'
+      path: '/pending'
+      fullPath: '/admin/orders/pending'
+      preLoaderRoute: typeof AdminOrdersPendingRouteImport
+      parentRoute: typeof AdminOrdersRoute
+    }
   }
 }
 
+interface AdminOrdersRouteChildren {
+  AdminOrdersPendingRoute: typeof AdminOrdersPendingRoute
+  AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersPendingRoute: AdminOrdersPendingRoute,
+  AdminOrdersIndexRoute: AdminOrdersIndexRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
+
+interface AdminProductsRouteChildren {
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
+}
+
+const AdminProductsRouteChildren: AdminProductsRouteChildren = {
+  AdminProductsNewRoute: AdminProductsNewRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
+}
+
+const AdminProductsRouteWithChildren = AdminProductsRoute._addFileChildren(
+  AdminProductsRouteChildren,
+)
+
+interface AdminRidesRouteChildren {
+  AdminRidesAcceptedRoute: typeof AdminRidesAcceptedRoute
+  AdminRidesRequestedRoute: typeof AdminRidesRequestedRoute
+  AdminRidesIndexRoute: typeof AdminRidesIndexRoute
+}
+
+const AdminRidesRouteChildren: AdminRidesRouteChildren = {
+  AdminRidesAcceptedRoute: AdminRidesAcceptedRoute,
+  AdminRidesRequestedRoute: AdminRidesRequestedRoute,
+  AdminRidesIndexRoute: AdminRidesIndexRoute,
+}
+
+const AdminRidesRouteWithChildren = AdminRidesRoute._addFileChildren(
+  AdminRidesRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminCustomersRoute: typeof AdminCustomersRoute
+  AdminDriversRoute: typeof AdminDriversRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+  AdminProductsRoute: typeof AdminProductsRouteWithChildren
+  AdminRidesRoute: typeof AdminRidesRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminCustomersRoute: AdminCustomersRoute,
+  AdminDriversRoute: AdminDriversRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
+  AdminProductsRoute: AdminProductsRouteWithChildren,
+  AdminRidesRoute: AdminRidesRouteWithChildren,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface OrdersRouteChildren {
+  OrdersStatusRoute: typeof OrdersStatusRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersStatusRoute: OrdersStatusRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
+interface ProductsRouteChildren {
+  ProductsProductIdRoute: typeof ProductsProductIdRoute
+  ProductsFeaturedRoute: typeof ProductsFeaturedRoute
+  ProductsIndexRoute: typeof ProductsIndexRoute
+}
+
+const ProductsRouteChildren: ProductsRouteChildren = {
+  ProductsProductIdRoute: ProductsProductIdRoute,
+  ProductsFeaturedRoute: ProductsFeaturedRoute,
+  ProductsIndexRoute: ProductsIndexRoute,
+}
+
+const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
+  ProductsRouteChildren,
+)
+
+interface RidesRouteChildren {
+  RidesNewRoute: typeof RidesNewRoute
+  RidesIndexRoute: typeof RidesIndexRoute
+}
+
+const RidesRouteChildren: RidesRouteChildren = {
+  RidesNewRoute: RidesNewRoute,
+  RidesIndexRoute: RidesIndexRoute,
+}
+
+const RidesRouteWithChildren = RidesRoute._addFileChildren(RidesRouteChildren)
+
+interface DriverRidesRouteChildren {
+  DriverRidesAcceptedRoute: typeof DriverRidesAcceptedRoute
+  DriverRidesCompletedRoute: typeof DriverRidesCompletedRoute
+  DriverRidesRequestedRoute: typeof DriverRidesRequestedRoute
+  DriverRidesIndexRoute: typeof DriverRidesIndexRoute
+}
+
+const DriverRidesRouteChildren: DriverRidesRouteChildren = {
+  DriverRidesAcceptedRoute: DriverRidesAcceptedRoute,
+  DriverRidesCompletedRoute: DriverRidesCompletedRoute,
+  DriverRidesRequestedRoute: DriverRidesRequestedRoute,
+  DriverRidesIndexRoute: DriverRidesIndexRoute,
+}
+
+const DriverRidesRouteWithChildren = DriverRidesRoute._addFileChildren(
+  DriverRidesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  CartRoute: CartRoute,
+  OrdersRoute: OrdersRouteWithChildren,
+  ProductsRoute: ProductsRouteWithChildren,
+  RidesRoute: RidesRouteWithChildren,
+  DriverRidesRoute: DriverRidesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

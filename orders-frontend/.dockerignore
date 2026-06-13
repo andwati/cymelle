@@ -1,0 +1,14 @@
+.env
+node_modules
+.output
+dist
+dist-ssr
+.nitro
+.tanstack
+.vinxi
+.wrangler
+.idea
+.vscode
+
+Dockerfile
+.dockerignore

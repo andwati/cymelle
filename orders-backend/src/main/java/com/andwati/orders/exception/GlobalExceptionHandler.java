@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -154,6 +156,34 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "VALIDATION_ERROR",
                 exception.getMessage(),
+                null,
+                request
+        );
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(
+            BadCredentialsException exception,
+            HttpServletRequest request
+    ) {
+        return build(
+                HttpStatus.UNAUTHORIZED,
+                "AUTHENTICATION_FAILED",
+                "Invalid username or password",
+                null,
+                request
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            AccessDeniedException exception,
+            HttpServletRequest request
+    ) {
+        return build(
+                HttpStatus.FORBIDDEN,
+                "ACCESS_DENIED",
+                "You do not have permission to perform this action",
                 null,
                 request
         );

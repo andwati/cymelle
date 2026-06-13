@@ -1,4 +1,4 @@
-export type OrderStatus = "PLACED" | "CANCELLED";
+export type OrderStatus = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
 export type OrderItem = {
     productId: string;
@@ -10,6 +10,7 @@ export type OrderItem = {
 
 export type Order = {
     id: string;
+    customerId: string | null;
     customerName: string;
     status: OrderStatus;
     items: OrderItem[];
@@ -21,6 +22,7 @@ export type Order = {
 
 export type OrderSummary = {
     id: string;
+    customerId: string | null;
     customerName: string;
     status: OrderStatus;
     totalAmount: number;
@@ -41,4 +43,16 @@ export type CancelOrderResponse = {
     status: OrderStatus;
     cancelledAt: string;
     stockRolledBack: boolean;
+};
+
+export type CreateOrderRequest = {
+    items: {
+        productId: string;
+        quantity: number;
+    }[];
+    deliveryRide?: {
+        pickupLocation: string;
+        dropoffLocation: string;
+        distanceKm: number;
+    } | null;
 };

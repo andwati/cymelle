@@ -1,6 +1,7 @@
 package com.andwati.orders.controller;
 
 import com.andwati.orders.dto.request.CreateOrderRequest;
+import com.andwati.orders.dto.request.UpdateOrderStatusRequest;
 import com.andwati.orders.dto.response.CancelOrderResponse;
 import com.andwati.orders.dto.response.OrderResponse;
 import com.andwati.orders.dto.response.OrderSummaryResponse;
@@ -51,7 +52,7 @@ public class OrderController {
     )
     @GetMapping
     public PageResponse<OrderSummaryResponse> listOrders(
-            @Parameter(description = "Optional order status filter.", example = "PLACED")
+            @Parameter(description = "Optional order status filter.", example = "PENDING")
             @RequestParam(required = false) OrderStatus status,
 
             @Parameter(
@@ -106,5 +107,14 @@ public class OrderController {
             @PathVariable UUID id
     ) {
         return orderService.cancelOrder(id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public OrderResponse updateStatus(
+            @Parameter(description = "Order ID.", example = "11111111-1111-1111-1111-111111111111")
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateOrderStatusRequest request
+    ) {
+        return orderService.updateStatus(id, request.status());
     }
 }

@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
 
-    @EntityGraph(attributePaths = {"items", "items.product"})
+    @EntityGraph(attributePaths = {"items", "items.product", "customer"})
     Optional<Order> findWithItemsById(UUID id);
 }

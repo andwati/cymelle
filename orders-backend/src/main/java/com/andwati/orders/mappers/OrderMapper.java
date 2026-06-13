@@ -14,6 +14,7 @@ public class OrderMapper {
     public OrderResponse toResponse(Order order) {
         return new OrderResponse(
                 order.getId(),
+                order.getCustomer() == null ? null : order.getCustomer().getId(),
                 order.getCustomerName(),
                 order.getStatus(),
                 order.getItems().stream().map(this::toItemResponse).toList(),
@@ -32,6 +33,7 @@ public class OrderMapper {
 
         return new OrderSummaryResponse(
                 order.getId(),
+                order.getCustomer() == null ? null : order.getCustomer().getId(),
                 order.getCustomerName(),
                 order.getStatus(),
                 order.getTotalAmount(),

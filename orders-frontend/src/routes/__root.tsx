@@ -3,6 +3,11 @@ import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {createRootRouteWithContext, HeadContent, Outlet, Scripts,} from "@tanstack/react-router";
 import {TanStackRouterDevtools} from "@tanstack/react-router-devtools";
 import appCss from "#/styles.css?url";
+import {AuthProvider} from "#/hooks/useAuth";
+import {CartProvider} from "#/hooks/useCart";
+import {Toaster} from "#/components/ui/sonner";
+import {TooltipProvider} from "#/components/ui/tooltip";
+import {ThemeProvider} from "#/components/theme-provider";
 
 export const Route = createRootRouteWithContext<{
 	queryClient: QueryClient;
@@ -32,12 +37,21 @@ export const Route = createRootRouteWithContext<{
 
 function RootComponent() {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 		<head>
 			<HeadContent/>
 		</head>
 		<body>
-		<Outlet/>
+		<ThemeProvider>
+		<TooltipProvider>
+		<AuthProvider>
+			<CartProvider>
+			<Outlet/>
+			</CartProvider>
+		</AuthProvider>
+		</TooltipProvider>
+		</ThemeProvider>
+		<Toaster richColors position="top-right"/>
 		<TanStackRouterDevtools position="bottom-right"/>
 		<ReactQueryDevtools initialIsOpen={false}/>
 		<Scripts/>

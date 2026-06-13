@@ -1,6 +1,13 @@
 import {apiRequest} from "#/api/client";
 import type {PageResponse} from "#/types/api";
-import type {CancelOrderResponse, Order, OrderFilters, OrderSummary,} from "#/types/order";
+import type {
+    CancelOrderResponse,
+    CreateOrderRequest,
+    Order,
+    OrderFilters,
+    OrderStatus,
+    OrderSummary,
+} from "#/types/order";
 
 export function getOrders(
     filters: OrderFilters,
@@ -34,8 +41,22 @@ export function getOrder(id: string, signal?: AbortSignal) {
     return apiRequest<Order>(`/orders/${id}`, {signal});
 }
 
+export function createOrder(request: CreateOrderRequest) {
+    return apiRequest<Order>("/orders", {
+        method: "POST",
+        body: request,
+    });
+}
+
 export function cancelOrder(id: string) {
     return apiRequest<CancelOrderResponse>(`/orders/${id}`, {
         method: "DELETE",
+    });
+}
+
+export function updateOrderStatus(id: string, status: OrderStatus) {
+    return apiRequest<Order>(`/orders/${id}/status`, {
+        method: "PATCH",
+        body: {status},
     });
 }

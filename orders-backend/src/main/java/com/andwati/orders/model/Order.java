@@ -20,9 +20,13 @@ public class Order {
     @Column(nullable = false, length = 120)
     private String customerName;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private AppUser customer;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private OrderStatus status = OrderStatus.PLACED;
+    private OrderStatus status = OrderStatus.PENDING;
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
@@ -53,7 +57,7 @@ public class Order {
         }
 
         if (status == null) {
-            status = OrderStatus.PLACED;
+            status = OrderStatus.PENDING;
         }
     }
 
@@ -70,12 +74,57 @@ public class Order {
     }
 
     public boolean isCancellable() {
-        return status == OrderStatus.PLACED;
+        return status == OrderStatus.PENDING;
     }
 
     public void cancel() {
+        if (!isCancellable()) {
+            throw new IllegalStateException("Only pending orders can be cancelled");
+        }
+
         this.status = OrderStatus.CANCELLED;
         this.cancelledAt = Instant.now();
+    }
+
+    public void markDeliveredFromRide() {
+        if (status == OrderStatus.CANCELLED) {
+            throw new IllegalArgumentException("Cancelled orders cannot be delivered");
+        }
+
+        if (status == OrderStatus.DELIVERED) {
+            return;
+        }
+
+        status = OrderStatus.DELIVERED;
+    }
+
+    public void updateStatus(OrderStatus nextStatus) {
+        if (nextStatus == null) {
+            throw new IllegalArgumentException("status is required");
+        }
+
+        if (status == OrderStatus.CANCELLED || status == OrderStatus.DELIVERED) {
+            throw new IllegalArgumentException("Final orders cannot be updated");
+        }
+
+        if (nextStatus == OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Orders cannot be moved back to pending");
+        }
+
+        if (status == OrderStatus.PENDING && (nextStatus == OrderStatus.SHIPPED || nextStatus == OrderStatus.CANCELLED)) {
+            status = nextStatus;
+            if (nextStatus == OrderStatus.CANCELLED) {
+                cancelledAt = Instant.now();
+            }
+            return;
+        }
+
+        if (status == OrderStatus.SHIPPED && nextStatus == OrderStatus.DELIVERED) {
+            status = nextStatus;
+            return;
+        }
+
+        throw new IllegalArgumentException("Invalid order status transition");
     }
 
     public UUID getId() {
@@ -93,6 +142,15 @@ public class Order {
 
     public Order setCustomerName(String customerName) {
         this.customerName = customerName;
+        return this;
+    }
+
+    public AppUser getCustomer() {
+        return customer;
+    }
+
+    public Order setCustomer(AppUser customer) {
+        this.customer = customer;
         return this;
     }
 

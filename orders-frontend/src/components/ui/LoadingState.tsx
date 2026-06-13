@@ -1,18 +1,21 @@
 type LoadingStateProps = {
     title?: string;
-    description?: string;
 };
 
 export function LoadingState({
                                  title = "Loading",
-                                 description = "Fetching the latest data...",
                              }: LoadingStateProps) {
     return (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <div
-                className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900"/>
-            <h3 className="font-semibold text-slate-900">{title}</h3>
-            <p className="mt-1 text-sm text-slate-500">{description}</p>
+        <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm" aria-label={title}>
+            <div className="space-y-3">
+                <div className="h-4 w-36 animate-pulse rounded-md bg-muted"/>
+                <div className="h-8 w-full animate-pulse rounded-md bg-muted"/>
+                <div className="grid gap-3 md:grid-cols-3">
+                    <div className="h-16 animate-pulse rounded-md bg-muted"/>
+                    <div className="h-16 animate-pulse rounded-md bg-muted"/>
+                    <div className="h-16 animate-pulse rounded-md bg-muted"/>
+                </div>
+            </div>
         </div>
     );
 }

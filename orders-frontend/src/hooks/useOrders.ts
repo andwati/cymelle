@@ -1,5 +1,6 @@
-import {cancelOrder, getOrders} from "#/api/orders";
+import {cancelOrder, createOrder, getOrders, updateOrderStatus} from "#/api/orders";
 import {inventoryQueryKeys} from "#/hooks/useInventory";
+import {productQueryKeys} from "#/hooks/useProducts";
 import type {OrderFilters} from "#/types/order";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
@@ -29,7 +30,35 @@ export function useCancelOrder() {
                 queryClient.invalidateQueries({
                     queryKey: inventoryQueryKeys.all,
                 }),
+                queryClient.invalidateQueries({
+                    queryKey: productQueryKeys.all,
+                }),
             ]);
         },
+    });
+}
+
+export function useCreateOrder() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: createOrder,
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({queryKey: orderQueryKeys.all}),
+                queryClient.invalidateQueries({queryKey: inventoryQueryKeys.all}),
+                queryClient.invalidateQueries({queryKey: productQueryKeys.all}),
+            ]);
+        },
+    });
+}
+
+export function useUpdateOrderStatus() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({id, status}: {id: string; status: import("#/types/order").OrderStatus}) =>
+            updateOrderStatus(id, status),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: orderQueryKeys.all}),
     });
 }

@@ -11,6 +11,7 @@ import com.andwati.orders.model.*;
 import com.andwati.orders.repository.InventoryItemRepository;
 import com.andwati.orders.repository.OrderRepository;
 import com.andwati.orders.repository.ProductRepository;
+import com.andwati.orders.repository.RideRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -33,22 +34,33 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final InventoryItemRepository inventoryItemRepository;
+    private final RideRepository rideRepository;
     private final OrderMapper orderMapper;
+    private final AppUserService appUserService;
 
     public OrderService(
             OrderRepository orderRepository,
             ProductRepository productRepository,
             InventoryItemRepository inventoryItemRepository,
-            OrderMapper orderMapper
+            RideRepository rideRepository,
+            OrderMapper orderMapper,
+            AppUserService appUserService
     ) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.inventoryItemRepository = inventoryItemRepository;
+        this.rideRepository = rideRepository;
         this.orderMapper = orderMapper;
+        this.appUserService = appUserService;
     }
 
     @Transactional
     public OrderResponse placeOrder(CreateOrderRequest request) {
+        AppUser customer = appUserService.getCurrentUser();
+        if (customer.getRole() != Role.CUSTOMER) {
+            throw new IllegalArgumentException("Only customers can place orders");
+        }
+
         Map<UUID, Integer> requestedQuantities = normalizeItems(request);
 
         Map<UUID, Product> productsById = productRepository.findByIdIn(requestedQuantities.keySet())
@@ -69,8 +81,9 @@ public class OrderService {
         validateStockAvailability(requestedQuantities, inventoryByProductId);
 
         Order order = new Order();
-        order.setCustomerName(request.customerName());
-        order.setStatus(OrderStatus.PLACED);
+        order.setCustomer(customer);
+        order.setCustomerName(customer.getDisplayName());
+        order.setStatus(OrderStatus.PENDING);
         order.setCurrency("KES");
         order.setCreatedAt(Instant.now());
 
@@ -91,6 +104,18 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        if (request.deliveryRide() != null) {
+            Ride ride = new Ride()
+                    .setOrder(savedOrder)
+                    .setCustomer(customer)
+                    .setPickupLocation(request.deliveryRide().pickupLocation().trim())
+                    .setDropoffLocation(request.deliveryRide().dropoffLocation().trim())
+                    .setDistanceKm(request.deliveryRide().distanceKm())
+                    .setStatus(RideStatus.REQUESTED);
+
+            rideRepository.save(ride);
+        }
+
         return orderMapper.toResponse(savedOrder);
     }
 
@@ -98,6 +123,8 @@ public class OrderService {
     public CancelOrderResponse cancelOrder(UUID orderId) {
         Order order = orderRepository.findWithItemsById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        assertCanAccessOrder(order);
 
         if (!order.isCancellable()) {
             throw new OrderNotCancellableException(orderId);
@@ -137,6 +164,8 @@ public class OrderService {
         Order order = orderRepository.findWithItemsById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
+        assertCanAccessOrder(order);
+
         return orderMapper.toResponse(order);
     }
 
@@ -157,7 +186,9 @@ public class OrderService {
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
 
-        var result = orderRepository.findAll(buildOrderSpecification(status, from, to), pageable);
+        AppUser currentUser = appUserService.getCurrentUser();
+
+        var result = orderRepository.findAll(buildOrderSpecification(status, from, to, currentUser), pageable);
 
         var items = result.getContent()
                 .stream()
@@ -171,6 +202,25 @@ public class OrderService {
                 result.getTotalElements(),
                 result.getTotalPages()
         );
+    }
+
+    @Transactional
+    public OrderResponse updateStatus(UUID orderId, OrderStatus status) {
+        AppUser currentUser = appUserService.getCurrentUser();
+        if (currentUser.getRole() != Role.ADMIN) {
+            throw new IllegalArgumentException("Only admins can update order status");
+        }
+
+        Order order = orderRepository.findWithItemsById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+
+        if (status == OrderStatus.CANCELLED && order.isCancellable()) {
+            cancelOrder(orderId);
+            return orderMapper.toResponse(order);
+        }
+
+        order.updateStatus(status);
+        return orderMapper.toResponse(order);
     }
 
     private Map<UUID, Integer> normalizeItems(CreateOrderRequest request) {
@@ -236,7 +286,8 @@ public class OrderService {
     private Specification<Order> buildOrderSpecification(
             OrderStatus status,
             LocalDate from,
-            LocalDate to
+            LocalDate to,
+            AppUser currentUser
     ) {
         return (root, query, criteriaBuilder) -> {
             var predicates = new java.util.ArrayList<Predicate>();
@@ -255,7 +306,29 @@ public class OrderService {
                 predicates.add(criteriaBuilder.lessThan(root.get("createdAt"), toExclusive));
             }
 
+            if (currentUser.getRole() == Role.CUSTOMER) {
+                predicates.add(criteriaBuilder.equal(root.get("customer").get("id"), currentUser.getId()));
+            } else if (currentUser.getRole() != Role.ADMIN) {
+                predicates.add(criteriaBuilder.disjunction());
+            }
+
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         };
+    }
+
+    private void assertCanAccessOrder(Order order) {
+        AppUser currentUser = appUserService.getCurrentUser();
+
+        if (currentUser.getRole() == Role.ADMIN) {
+            return;
+        }
+
+        if (currentUser.getRole() == Role.CUSTOMER
+                && order.getCustomer() != null
+                && currentUser.getId().equals(order.getCustomer().getId())) {
+            return;
+        }
+
+        throw new IllegalArgumentException("You cannot access this order");
     }
 }
