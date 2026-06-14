@@ -1,6 +1,6 @@
-import {DriverRidesPage} from "#/components/app/WorkspacePages";
-import {createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { DriverRidesPage } from "#/components/app/WorkspacePages";
 
 export const Route = createFileRoute("/driver/rides/accepted")({
-    component: () => <DriverRidesPage status="ACCEPTED"/>,
+	component: () => <DriverRidesPage status="ACCEPTED" />,
 });

@@ -1,6 +1,6 @@
-import {ProductListingPage} from "#/components/app/WorkspacePages";
-import {createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { ProductListingPage } from "#/components/app/WorkspacePages";
 
 export const Route = createFileRoute("/products/featured")({
-    component: () => <ProductListingPage featured/>,
+	component: () => <ProductListingPage featured />,
 });

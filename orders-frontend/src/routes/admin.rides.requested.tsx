@@ -1,6 +1,6 @@
-import {AdminRidesPage} from "#/components/app/WorkspacePages";
-import {createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { AdminRidesPage } from "#/components/app/WorkspacePages";
 
 export const Route = createFileRoute("/admin/rides/requested")({
-    component: () => <AdminRidesPage status="REQUESTED"/>,
+	component: () => <AdminRidesPage status="REQUESTED" />,
 });

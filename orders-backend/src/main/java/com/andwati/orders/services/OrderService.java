@@ -57,6 +57,18 @@ public class OrderService {
     @Transactional
     public OrderResponse placeOrder(CreateOrderRequest request) {
         AppUser customer = appUserService.getCurrentUser();
+
+        PendingOrderResult result = createPendingOrder(customer, request, null, null);
+        return orderMapper.toResponse(result.order());
+    }
+
+    @Transactional
+    public PendingOrderResult createPendingOrder(
+            AppUser customer,
+            CreateOrderRequest request,
+            java.math.BigDecimal rideFare,
+            String rideCurrency
+    ) {
         if (customer.getRole() != Role.CUSTOMER) {
             throw new IllegalArgumentException("Only customers can place orders");
         }
@@ -103,6 +115,7 @@ public class OrderService {
         order.recalculateTotal();
 
         Order savedOrder = orderRepository.save(order);
+        Ride savedRide = null;
 
         if (request.deliveryRide() != null) {
             Ride ride = new Ride()
@@ -111,12 +124,14 @@ public class OrderService {
                     .setPickupLocation(request.deliveryRide().pickupLocation().trim())
                     .setDropoffLocation(request.deliveryRide().dropoffLocation().trim())
                     .setDistanceKm(request.deliveryRide().distanceKm())
+                    .setFareAmount(rideFare)
+                    .setCurrency(rideCurrency == null ? "KES" : rideCurrency)
                     .setStatus(RideStatus.REQUESTED);
 
-            rideRepository.save(ride);
+            savedRide = rideRepository.save(ride);
         }
 
-        return orderMapper.toResponse(savedOrder);
+        return new PendingOrderResult(savedOrder, savedRide);
     }
 
     @Transactional
