@@ -2,6 +2,71 @@
 
 Cymelle is a commerce, delivery, and ride operations application. Customers can browse products, place orders, request delivery rides, and complete a simulated checkout. Admins manage products, inventory, orders, users, and rides. Drivers accept and complete delivery rides.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="./screenshots/storefront-products.png" alt="Storefront product listing" />
+      <br />
+      <strong>Storefront product listing</strong>
+    </td>
+    <td width="50%">
+      <img src="./screenshots/customer-dashboard.png" alt="Customer dashboard" />
+      <br />
+      <strong>Customer dashboard</strong>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="./screenshots/customer-ride-history.png" alt="Customer ride history" />
+      <br />
+      <strong>Customer ride history</strong>
+    </td>
+    <td width="50%">
+      <img src="./screenshots/driver-dashboard.png" alt="Driver dashboard" />
+      <br />
+      <strong>Driver dashboard</strong>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="./screenshots/admin-dashboard.png" alt="Admin dashboard" />
+      <br />
+      <strong>Admin dashboard</strong>
+    </td>
+    <td width="50%">
+      <img src="./screenshots/admin-operations-overview.png" alt="Admin operations overview" />
+      <br />
+      <strong>Admin operations overview</strong>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="./screenshots/admin-inventory-health.png" alt="Admin inventory health" />
+      <br />
+      <strong>Admin inventory health</strong>
+    </td>
+    <td width="50%">
+      <img src="./screenshots/admin-users.png" alt="Admin users management" />
+      <br />
+      <strong>Admin users management</strong>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="./screenshots/admin-orders.png" alt="Admin orders management" />
+      <br />
+      <strong>Admin orders management</strong>
+    </td>
+    <td width="50%">
+      <img src="./screenshots/admin-product-catalog.png" alt="Admin product catalog" />
+      <br />
+      <strong>Admin product catalog</strong>
+    </td>
+  </tr>
+</table>
+
 ## Architecture
 
 The current system is a three-tier application: a React frontend, a Spring Boot API, and PostgreSQL.
