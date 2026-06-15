@@ -16,6 +16,7 @@ public class OrdersBackendApplication {
 
     public static void main(String[] args) {
 
+        @SuppressWarnings("unused")
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().systemProperties().load();
 
         SpringApplication.run(OrdersBackendApplication.class, args);
