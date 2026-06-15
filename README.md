@@ -1,10 +1,10 @@
 # Cymelle
 
-Cymelle is a commerce, delivery, and ride operations application. Customers can browse products, place orders, request delivery rides, and pay through Paystack. Admins manage products, inventory, orders, users, and rides. Drivers accept and complete delivery rides.
+Cymelle is a commerce, delivery, and ride operations application. Customers can browse products, place orders, request delivery rides, and complete a simulated checkout. Admins manage products, inventory, orders, users, and rides. Drivers accept and complete delivery rides.
 
 ## Architecture
 
-The current system is a three-tier application: a React frontend, a Spring Boot API, and PostgreSQL. Paystack is the external payment provider.
+The current system is a three-tier application: a React frontend, a Spring Boot API, and PostgreSQL.
 
 ```text
 +-----------------------------+
@@ -32,13 +32,13 @@ The current system is a three-tier application: a React frontend, a Spring Boot 
 | Security + Services + JPA   |
 | Swagger/OpenAPI             |
 +--------+--------------------+
-         |              |
-         | JDBC         | HTTPS
-         v              v
-+----------------+   +------------------+
-| PostgreSQL     |   | Paystack API     |
-| app data       |   | payments         |
-+----------------+   +------------------+
+         |
+         | JDBC
+         v
++----------------+
+| PostgreSQL     |
+| app data       |
++----------------+
 ```
 
 Local Docker Compose runs the same shape with three services:
@@ -106,7 +106,7 @@ Local Docker Compose runs the same shape with three services:
 - PostgreSQL 18 Alpine locally
 - Render Docker web services for deployment
 - Neon PostgreSQL for deployed database
-- Paystack payment integration
+- Simulated checkout for local and deployed testing
 
 ## Domain Model
 
@@ -216,7 +216,7 @@ Backend calculates product subtotal
 Quote returns productSubtotal, rideFare, grandTotal, currency, expiresAt
 ```
 
-The quote endpoint is useful before Paystack initialization so the customer can see the final total.
+The quote endpoint is useful before checkout so the customer can see the final total.
 
 ### Order Placement
 
@@ -242,10 +242,10 @@ Order and OrderItems are created as PENDING
 
 Order items store `productName`, `unitPrice`, and `lineTotal`, so historical orders keep their checkout-time product snapshot even if the product changes later.
 
-### Payment With Paystack
+### Simulated Checkout
 
 ```text
-Customer initializes Paystack checkout
+Customer starts checkout
         |
         v
 Backend calculates quote and creates pending order
@@ -254,22 +254,13 @@ Backend calculates quote and creates pending order
 Payment row is created with unique reference
         |
         v
-Backend initializes Paystack transaction
+Backend marks the local simulated payment as PAID
         |
         v
-Frontend redirects user to Paystack authorization URL
-        |
-        v
-Paystack callback/webhook triggers backend verification
-        |
-        v
-Backend verifies reference, amount, and currency with Paystack
-        |
-        +--> success -> Payment becomes PAID
-        +--> failure -> Payment becomes FAILED / ABANDONED / REFUNDED
+Frontend clears the cart and sends the customer to orders
 ```
 
-The backend verifies payment server-to-server. The frontend callback is not treated as proof of payment by itself.
+No external payment provider is required for local or deployed testing.
 
 ### Order Status
 
@@ -313,8 +304,7 @@ All backend endpoints are under `/api`.
 | Products | `GET /products`, `GET /products/{id}`, `POST /products`, `PUT /products/{id}`, `DELETE /products/{id}` |
 | Inventory | `GET /inventory`, `GET /inventory/low-stock` |
 | Orders | `POST /orders`, `GET /orders`, `GET /orders/{id}`, `DELETE /orders/{id}`, `PATCH /orders/{id}/status` |
-| Checkout | `POST /checkout/quote` |
-| Paystack | `POST /payments/paystack/initialize`, `POST /payments/paystack/verify/{reference}`, `POST /payments/paystack/webhook` |
+| Checkout | `POST /checkout/quote`, `POST /checkout/simulate` |
 | Rides | `GET /rides`, `POST /rides`, `POST /rides/{id}/accept`, `POST /rides/{id}/complete`, `DELETE /rides/{id}`, `PATCH /rides/{id}/status` |
 | Users | `GET /users`, `GET /users/customers`, `GET /users/drivers`, `POST /users`, `PUT /users/{id}`, `DELETE /users/{id}` |
 | Fare | `GET /fare/calculate` |
@@ -346,7 +336,6 @@ Seeded products include accessories and office equipment such as wireless mice, 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Paystack test keys if you want to test checkout payments
 
 ### Run Everything With Docker Compose
 
@@ -363,6 +352,14 @@ Services:
 - OpenAPI JSON: `http://localhost:8080/api-docs`
 - Postgres: `localhost:5432`
 - Default database/user/password: `cymelle` / `cymelle` / `cymelle`
+
+Seeded test credentials are available when `SEED_DATA=true`:
+
+| Role | Username | Password |
+| --- | --- | --- |
+| Admin | `admin` | `admin123` |
+| Driver | `driver` | `driver123` |
+| Customer | `customer` | `customer123` |
 
 Useful commands:
 
@@ -399,23 +396,7 @@ FARE_PER_KM_RATE=50.00
 FARE_MINIMUM_FARE=150.00
 FARE_DEFAULT_SURGE_MULTIPLIER=1.0
 FARE_CURRENCY=KES
-
-PAYSTACK_SECRET_KEY=
-PAYSTACK_PUBLIC_KEY=
-PAYSTACK_CALLBACK_URL=http://localhost:3000/payments/paystack/callback
-PAYSTACK_WEBHOOK_SECRET=
-PAYSTACK_API_BASE_URL=https://api.paystack.co
 ```
-
-For Paystack checkout, set:
-
-```sh
-PAYSTACK_SECRET_KEY=sk_test_...
-PAYSTACK_PUBLIC_KEY=pk_test_...
-PAYSTACK_CALLBACK_URL=http://localhost:3000/payments/paystack/callback
-```
-
-If `PAYSTACK_WEBHOOK_SECRET` is empty, the backend uses the Paystack secret key for webhook signature verification.
 
 ### Run Services Manually
 

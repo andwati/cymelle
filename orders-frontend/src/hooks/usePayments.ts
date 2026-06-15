@@ -1,15 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	getCheckoutQuote,
-	initializePaystackPayment,
-	verifyPaystackPayment,
-} from "#/api/payments";
+import { getCheckoutQuote, simulateCheckout } from "#/api/payments";
 import { inventoryQueryKeys } from "#/hooks/useInventory";
 import { orderQueryKeys } from "#/hooks/useOrders";
 import { productQueryKeys } from "#/hooks/useProducts";
 import type {
 	CheckoutQuoteRequest,
-	PaystackInitializeRequest,
+	SimulatedCheckoutRequest,
 } from "#/types/payment";
 
 export const paymentQueryKeys = {
@@ -29,27 +25,12 @@ export function useCheckoutQuote(
 	});
 }
 
-export function useInitializePaystackPayment() {
+export function useSimulateCheckout() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (request: PaystackInitializeRequest) =>
-			initializePaystackPayment(request),
-		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: orderQueryKeys.all }),
-				queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.all }),
-				queryClient.invalidateQueries({ queryKey: productQueryKeys.all }),
-			]);
-		},
-	});
-}
-
-export function useVerifyPaystackPayment() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: verifyPaystackPayment,
+		mutationFn: (request: SimulatedCheckoutRequest) =>
+			simulateCheckout(request),
 		onSuccess: async () => {
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: orderQueryKeys.all }),

@@ -49,12 +49,6 @@ public class Payment {
     @Column(nullable = false, length = 30)
     private PaymentStatus status = PaymentStatus.PENDING;
 
-    @Column(length = 512)
-    private String authorizationUrl;
-
-    @Column(length = 120)
-    private String accessCode;
-
     @Lob
     private String rawVerificationPayload;
 
@@ -191,24 +185,6 @@ public class Payment {
 
     public Payment setStatus(PaymentStatus status) {
         this.status = status;
-        return this;
-    }
-
-    public String getAuthorizationUrl() {
-        return authorizationUrl;
-    }
-
-    public Payment setAuthorizationUrl(String authorizationUrl) {
-        this.authorizationUrl = authorizationUrl;
-        return this;
-    }
-
-    public String getAccessCode() {
-        return accessCode;
-    }
-
-    public Payment setAccessCode(String accessCode) {
-        this.accessCode = accessCode;
         return this;
     }
 

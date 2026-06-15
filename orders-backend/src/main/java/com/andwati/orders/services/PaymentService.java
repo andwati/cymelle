@@ -1,13 +1,10 @@
 package com.andwati.orders.services;
 
-import com.andwati.orders.config.PaystackProperties;
 import com.andwati.orders.dto.request.CheckoutQuoteRequest;
 import com.andwati.orders.dto.request.CreateOrderRequest;
-import com.andwati.orders.dto.request.PaystackInitializeRequest;
 import com.andwati.orders.dto.response.CheckoutQuoteResponse;
 import com.andwati.orders.dto.response.FareCalculationResponse;
-import com.andwati.orders.dto.response.PaystackInitializeResponse;
-import com.andwati.orders.dto.response.PaystackVerifyResponse;
+import com.andwati.orders.dto.response.SimulatedCheckoutResponse;
 import com.andwati.orders.exception.InsufficientStockException;
 import com.andwati.orders.exception.InventoryNotFoundException;
 import com.andwati.orders.exception.ProductNotFoundException;
@@ -15,19 +12,12 @@ import com.andwati.orders.model.*;
 import com.andwati.orders.repository.InventoryItemRepository;
 import com.andwati.orders.repository.PaymentRepository;
 import com.andwati.orders.repository.ProductRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,9 +36,6 @@ public class PaymentService {
     private final FareCalculationService fareCalculationService;
     private final OrderService orderService;
     private final AppUserService appUserService;
-    private final PaystackClient paystackClient;
-    private final PaystackProperties paystackProperties;
-    private final ObjectMapper objectMapper;
 
     public PaymentService(
             ProductRepository productRepository,
@@ -56,10 +43,7 @@ public class PaymentService {
             PaymentRepository paymentRepository,
             FareCalculationService fareCalculationService,
             OrderService orderService,
-            AppUserService appUserService,
-            PaystackClient paystackClient,
-            PaystackProperties paystackProperties,
-            ObjectMapper objectMapper
+            AppUserService appUserService
     ) {
         this.productRepository = productRepository;
         this.inventoryItemRepository = inventoryItemRepository;
@@ -67,9 +51,6 @@ public class PaymentService {
         this.fareCalculationService = fareCalculationService;
         this.orderService = orderService;
         this.appUserService = appUserService;
-        this.paystackClient = paystackClient;
-        this.paystackProperties = paystackProperties;
-        this.objectMapper = objectMapper;
     }
 
     @Transactional(readOnly = true)
@@ -79,7 +60,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaystackInitializeResponse initialize(PaystackInitializeRequest request) {
+    public SimulatedCheckoutResponse simulateCheckout(CreateOrderRequest request) {
         AppUser customer = appUserService.getCurrentUser();
         if (customer.getRole() != Role.CUSTOMER) {
             throw new IllegalArgumentException("Only customers can checkout");
@@ -88,7 +69,7 @@ public class PaymentService {
         CheckoutQuote quote = calculateQuote(request.items(), request.deliveryRide());
         PendingOrderResult pendingOrder = orderService.createPendingOrder(
                 customer,
-                request.toCreateOrderRequest(),
+                request,
                 quote.rideFare(),
                 quote.currency()
         );
@@ -106,76 +87,9 @@ public class PaymentService {
                 .setStatus(PaymentStatus.PENDING);
 
         paymentRepository.save(payment);
+        payment.markPaid(buildSimulatedPayload(customer, payment));
 
-        JsonNode paystackData = paystackClient.initializeTransaction(
-                customer.getUsername(),
-                payment.getAmountSubunits(),
-                payment.getCurrency(),
-                payment.getReference(),
-                buildMetadata(customer, payment)
-        );
-
-        payment
-                .setAuthorizationUrl(paystackData.path("authorization_url").asText())
-                .setAccessCode(paystackData.path("access_code").asText());
-
-        return toInitializeResponse(payment);
-    }
-
-    @Transactional
-    public PaystackVerifyResponse verify(String reference) {
-        Payment payment = getPayment(reference);
-        assertCanAccess(payment);
-
-        return verifyPayment(payment);
-    }
-
-    @Transactional
-    public void handleWebhook(String body, String signature) {
-        verifyWebhookSignature(body, signature);
-
-        JsonNode event;
-        try {
-            event = objectMapper.readTree(body);
-        } catch (JsonProcessingException exception) {
-            throw new IllegalArgumentException("Webhook payload is not valid JSON");
-        }
-
-        if (!"charge.success".equals(event.path("event").asText())) {
-            return;
-        }
-
-        String reference = event.path("data").path("reference").asText(null);
-        if (reference == null || reference.isBlank()) {
-            return;
-        }
-
-        paymentRepository.findByReference(reference).ifPresent(this::verifyPayment);
-    }
-
-    private PaystackVerifyResponse verifyPayment(Payment payment) {
-        JsonNode verification = paystackClient.verifyTransaction(payment.getReference());
-        JsonNode data = verification.path("data");
-        String rawPayload = toJson(verification);
-
-        boolean success = "success".equals(data.path("status").asText());
-        boolean matchesReference = payment.getReference().equals(data.path("reference").asText());
-        boolean matchesAmount = payment.getAmountSubunits() == data.path("amount").asLong();
-        boolean matchesCurrency = payment.getCurrency().equalsIgnoreCase(data.path("currency").asText());
-
-        if (success && matchesReference && matchesAmount && matchesCurrency) {
-            payment.markPaid(rawPayload);
-            return toVerifyResponse(payment, "Payment verified");
-        }
-
-        PaymentStatus nextStatus = mapPaystackStatus(data.path("status").asText());
-        payment.markFailed(nextStatus, rawPayload);
-
-        if (!success) {
-            return toVerifyResponse(payment, data.path("gateway_response").asText("Payment was not successful"));
-        }
-
-        throw new IllegalArgumentException("Paystack verification did not match the stored payment");
+        return toSimulatedCheckoutResponse(payment);
     }
 
     private CheckoutQuote calculateQuote(
@@ -281,33 +195,22 @@ public class PaymentService {
         );
     }
 
-    private PaystackInitializeResponse toInitializeResponse(Payment payment) {
-        return new PaystackInitializeResponse(
-                payment.getAuthorizationUrl(),
-                payment.getAccessCode(),
+    private SimulatedCheckoutResponse toSimulatedCheckoutResponse(Payment payment) {
+        return new SimulatedCheckoutResponse(
                 payment.getReference(),
                 payment.getOrder().getId(),
                 payment.getRide() == null ? null : payment.getRide().getId(),
                 payment.getAmountMajor(),
                 payment.getCurrency(),
-                payment.getStatus()
-        );
-    }
-
-    private PaystackVerifyResponse toVerifyResponse(Payment payment, String message) {
-        return new PaystackVerifyResponse(
-                payment.getReference(),
                 payment.getStatus(),
-                payment.getOrder().getId(),
-                payment.getRide() == null ? null : payment.getRide().getId(),
-                payment.getAmountMajor(),
-                payment.getCurrency(),
-                message
+                "Checkout simulated successfully"
         );
     }
 
-    private Map<String, Object> buildMetadata(AppUser customer, Payment payment) {
+    private String buildSimulatedPayload(AppUser customer, Payment payment) {
         Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("provider", "simulated");
+        metadata.put("reference", payment.getReference());
         metadata.put("orderId", payment.getOrder().getId().toString());
         metadata.put("rideId", payment.getRide() == null ? null : payment.getRide().getId().toString());
         metadata.put("userId", customer.getId().toString());
@@ -315,7 +218,8 @@ public class PaymentService {
         metadata.put("rideFare", payment.getRideFare());
         metadata.put("grandTotal", payment.getAmountMajor());
         metadata.put("currency", payment.getCurrency());
-        return metadata;
+        metadata.put("status", PaymentStatus.PAID.name());
+        return metadata.toString();
     }
 
     private long toSubunits(BigDecimal amount) {
@@ -326,80 +230,6 @@ public class PaymentService {
 
     private String generateReference() {
         return "CYM-" + UUID.randomUUID();
-    }
-
-    private Payment getPayment(String reference) {
-        return paymentRepository.findByReference(reference)
-                .orElseThrow(() -> new IllegalArgumentException("Payment reference was not found"));
-    }
-
-    private void assertCanAccess(Payment payment) {
-        AppUser currentUser = appUserService.getCurrentUser();
-        if (currentUser.getRole() == Role.ADMIN) {
-            return;
-        }
-
-        AppUser customer = payment.getOrder().getCustomer();
-        if (currentUser.getRole() == Role.CUSTOMER
-                && customer != null
-                && currentUser.getId().equals(customer.getId())) {
-            return;
-        }
-
-        throw new IllegalArgumentException("You cannot access this payment");
-    }
-
-    private PaymentStatus mapPaystackStatus(String status) {
-        return switch (status) {
-            case "abandoned" -> PaymentStatus.ABANDONED;
-            case "reversed" -> PaymentStatus.REFUNDED;
-            default -> PaymentStatus.FAILED;
-        };
-    }
-
-    private void verifyWebhookSignature(String body, String signature) {
-        String secret = paystackProperties.resolvedWebhookSecret();
-        if (secret == null || secret.isBlank()) {
-            throw new IllegalStateException("PAYSTACK_WEBHOOK_SECRET or PAYSTACK_SECRET_KEY is not configured");
-        }
-        if (signature == null || signature.isBlank()) {
-            throw new IllegalArgumentException("Paystack signature is required");
-        }
-
-        try {
-            Mac mac = Mac.getInstance("HmacSHA512");
-            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
-            String expected = HexFormat.of().formatHex(mac.doFinal(body.getBytes(StandardCharsets.UTF_8)));
-            if (!constantTimeEquals(expected, signature)) {
-                throw new IllegalArgumentException("Invalid Paystack signature");
-            }
-        } catch (IllegalArgumentException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            throw new IllegalStateException("Could not verify Paystack signature", exception);
-        }
-    }
-
-    private boolean constantTimeEquals(String expected, String actual) {
-        byte[] expectedBytes = expected.getBytes(StandardCharsets.UTF_8);
-        byte[] actualBytes = actual.getBytes(StandardCharsets.UTF_8);
-        if (expectedBytes.length != actualBytes.length) {
-            return false;
-        }
-
-        int result = 0;
-        for (int index = 0; index < expectedBytes.length; index++) {
-            result |= expectedBytes[index] ^ actualBytes[index];
-        }
-        return result == 0;
-    }
-
-    private String toJson(JsonNode node) {
-        try {
-            return objectMapper.writeValueAsString(node);
-        } catch (JsonProcessingException exception) {
-            throw new IllegalStateException("Could not serialize Paystack verification payload", exception);
-        }
     }
 
     private record CheckoutQuote(

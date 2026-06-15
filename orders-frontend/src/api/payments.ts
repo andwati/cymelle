@@ -2,9 +2,8 @@ import { apiRequest } from "#/api/client";
 import type {
 	CheckoutQuote,
 	CheckoutQuoteRequest,
-	PaystackInitializeRequest,
-	PaystackInitializeResponse,
-	PaystackVerifyResponse,
+	SimulatedCheckoutRequest,
+	SimulatedCheckoutResponse,
 } from "#/types/payment";
 
 export function getCheckoutQuote(
@@ -18,21 +17,9 @@ export function getCheckoutQuote(
 	});
 }
 
-export function initializePaystackPayment(request: PaystackInitializeRequest) {
-	return apiRequest<PaystackInitializeResponse>(
-		"/payments/paystack/initialize",
-		{
-			method: "POST",
-			body: request,
-		},
-	);
-}
-
-export function verifyPaystackPayment(reference: string) {
-	return apiRequest<PaystackVerifyResponse>(
-		`/payments/paystack/verify/${encodeURIComponent(reference)}`,
-		{
-			method: "POST",
-		},
-	);
+export function simulateCheckout(request: SimulatedCheckoutRequest) {
+	return apiRequest<SimulatedCheckoutResponse>("/checkout/simulate", {
+		method: "POST",
+		body: request,
+	});
 }

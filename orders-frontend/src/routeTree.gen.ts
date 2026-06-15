@@ -35,7 +35,6 @@ import { Route as DriverRidesIndexRouteImport } from './routes/driver.rides.inde
 import { Route as AdminRidesIndexRouteImport } from './routes/admin.rides.index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin.products.index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
-import { Route as PaymentsPaystackCallbackRouteImport } from './routes/payments.paystack.callback'
 import { Route as DriverRidesRequestedRouteImport } from './routes/driver.rides.requested'
 import { Route as DriverRidesCompletedRouteImport } from './routes/driver.rides.completed'
 import { Route as DriverRidesAcceptedRouteImport } from './routes/driver.rides.accepted'
@@ -174,12 +173,6 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminOrdersRoute,
 } as any)
-const PaymentsPaystackCallbackRoute =
-  PaymentsPaystackCallbackRouteImport.update({
-    id: '/payments/paystack/callback',
-    path: '/payments/paystack/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const DriverRidesRequestedRoute = DriverRidesRequestedRouteImport.update({
   id: '/requested',
   path: '/requested',
@@ -246,7 +239,6 @@ export interface FileRoutesByFullPath {
   '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
   '/driver/rides/completed': typeof DriverRidesCompletedRoute
   '/driver/rides/requested': typeof DriverRidesRequestedRoute
-  '/payments/paystack/callback': typeof PaymentsPaystackCallbackRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/rides/': typeof AdminRidesIndexRoute
@@ -274,7 +266,6 @@ export interface FileRoutesByTo {
   '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
   '/driver/rides/completed': typeof DriverRidesCompletedRoute
   '/driver/rides/requested': typeof DriverRidesRequestedRoute
-  '/payments/paystack/callback': typeof PaymentsPaystackCallbackRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/rides': typeof AdminRidesIndexRoute
@@ -311,7 +302,6 @@ export interface FileRoutesById {
   '/driver/rides/accepted': typeof DriverRidesAcceptedRoute
   '/driver/rides/completed': typeof DriverRidesCompletedRoute
   '/driver/rides/requested': typeof DriverRidesRequestedRoute
-  '/payments/paystack/callback': typeof PaymentsPaystackCallbackRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/rides/': typeof AdminRidesIndexRoute
@@ -349,7 +339,6 @@ export interface FileRouteTypes {
     | '/driver/rides/accepted'
     | '/driver/rides/completed'
     | '/driver/rides/requested'
-    | '/payments/paystack/callback'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/rides/'
@@ -377,7 +366,6 @@ export interface FileRouteTypes {
     | '/driver/rides/accepted'
     | '/driver/rides/completed'
     | '/driver/rides/requested'
-    | '/payments/paystack/callback'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/rides'
@@ -413,7 +401,6 @@ export interface FileRouteTypes {
     | '/driver/rides/accepted'
     | '/driver/rides/completed'
     | '/driver/rides/requested'
-    | '/payments/paystack/callback'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/rides/'
@@ -428,7 +415,6 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRouteWithChildren
   RidesRoute: typeof RidesRouteWithChildren
   DriverRidesRoute: typeof DriverRidesRouteWithChildren
-  PaymentsPaystackCallbackRoute: typeof PaymentsPaystackCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -614,13 +600,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/orders/'
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof AdminOrdersRoute
-    }
-    '/payments/paystack/callback': {
-      id: '/payments/paystack/callback'
-      path: '/payments/paystack/callback'
-      fullPath: '/payments/paystack/callback'
-      preLoaderRoute: typeof PaymentsPaystackCallbackRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/driver/rides/requested': {
       id: '/driver/rides/requested'
@@ -809,7 +788,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRouteWithChildren,
   RidesRoute: RidesRouteWithChildren,
   DriverRidesRoute: DriverRidesRouteWithChildren,
-  PaymentsPaystackCallbackRoute: PaymentsPaystackCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

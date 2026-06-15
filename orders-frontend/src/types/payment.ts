@@ -10,25 +10,14 @@ export type CheckoutQuote = {
 	expiresAt: string;
 };
 
-export type PaystackInitializeRequest = CreateOrderRequest;
+export type SimulatedCheckoutRequest = CreateOrderRequest;
 
-export type PaystackInitializeResponse = {
-	authorizationUrl: string;
-	accessCode: string;
+export type SimulatedCheckoutResponse = {
 	reference: string;
 	orderId: string;
 	rideId: string | null;
 	amount: number;
 	currency: string;
 	status: "PENDING" | "PAID" | "FAILED" | "ABANDONED" | "REFUNDED";
-};
-
-export type PaystackVerifyResponse = {
-	reference: string;
-	status: "PENDING" | "PAID" | "FAILED" | "ABANDONED" | "REFUNDED";
-	orderId: string;
-	rideId: string | null;
-	amount: number;
-	currency: string;
 	message: string;
 };

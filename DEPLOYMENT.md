@@ -17,11 +17,6 @@ No PostgreSQL container or Render database is created. Use your Neon database co
 4. If Render assigns different service URLs than the defaults in `render.yaml`, update:
    - `cymelle-api` -> `APP_CORS_ALLOWED_ORIGINS` to the frontend URL.
    - `cymelle-web` -> `VITE_API_BASE_URL` to the API URL plus `/api`.
-5. Configure Paystack on `cymelle-api`:
-   - `PAYSTACK_SECRET_KEY`: your Paystack secret key.
-   - `PAYSTACK_PUBLIC_KEY`: your Paystack public key, kept for operational visibility.
-   - `PAYSTACK_CALLBACK_URL`: frontend callback URL, for example `https://cymelle-web.onrender.com/payments/paystack/callback`.
-   - `PAYSTACK_WEBHOOK_SECRET`: optional override for webhook HMAC verification; when omitted, the secret key is used.
 
 ## Local Docker builds
 

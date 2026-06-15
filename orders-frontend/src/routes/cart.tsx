@@ -14,10 +14,7 @@ import { Separator } from "#/components/ui/separator";
 import { formatCurrency } from "#/hooks/formatCurrency";
 import { useAuth } from "#/hooks/useAuth";
 import { useCart } from "#/hooks/useCart";
-import {
-	useCheckoutQuote,
-	useInitializePaystackPayment,
-} from "#/hooks/usePayments";
+import { useCheckoutQuote, useSimulateCheckout } from "#/hooks/usePayments";
 import { navigateToRoleHome } from "#/lib/auth-navigation";
 
 export const Route = createFileRoute("/cart")({
@@ -28,7 +25,7 @@ function CartPage() {
 	const cart = useCart();
 	const { user, login, register, logout } = useAuth();
 	const navigate = useNavigate();
-	const initializePayment = useInitializePaystackPayment();
+	const simulateCheckout = useSimulateCheckout();
 	const [authMode, setAuthMode] = useState<"login" | "register" | null>(null);
 	const [requestRide, setRequestRide] = useState(false);
 	const [rideForm, setRideForm] = useState({
@@ -125,11 +122,12 @@ function CartPage() {
 		}
 
 		try {
-			const payment = await initializePayment.mutateAsync(checkoutRequest);
-			toast.success("Redirecting to Paystack", {
-				description: `Payment ${payment.reference} is ready.`,
+			const checkout = await simulateCheckout.mutateAsync(checkoutRequest);
+			cart.clearCart();
+			toast.success("Checkout complete", {
+				description: `Order ${checkout.orderId.slice(0, 8)} is ready for fulfillment.`,
 			});
-			window.location.href = payment.authorizationUrl;
+			await navigate({ to: "/orders" });
 		} catch (error) {
 			toast.error("Checkout failed", {
 				description:
@@ -326,14 +324,14 @@ function CartPage() {
 								</div>
 								<Button
 									type="button"
-									disabled={initializePayment.isPending}
+									disabled={simulateCheckout.isPending}
 									onClick={checkout}
 									className="w-full"
 								>
 									<CreditCard className="mr-2 size-4" />
-									{initializePayment.isPending
-										? "Opening Paystack..."
-										: "Pay with Paystack"}
+									{simulateCheckout.isPending
+										? "Completing checkout..."
+										: "Simulate checkout"}
 								</Button>
 								{!user ? (
 									<div className="grid grid-cols-2 gap-2">
@@ -362,11 +360,11 @@ function CartPage() {
 										}
 									/>
 								) : null}
-								{initializePayment.error ? (
+								{simulateCheckout.error ? (
 									<ErrorState
 										message={
-											initializePayment.error instanceof Error
-												? initializePayment.error.message
+											simulateCheckout.error instanceof Error
+												? simulateCheckout.error.message
 												: "Checkout failed"
 										}
 									/>
