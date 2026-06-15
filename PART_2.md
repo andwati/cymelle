@@ -1,6 +1,7 @@
 # Part 2: Real-Time Location Updates Backend - Architecture Walkthrough
 
-This is a system design question: design the backend for real-time location updates for Cymelle delivery trips and driver/rider activity. The system must support 500+ concurrent active trips or deliveries while keeping customer tracking, driver apps, and admin/dispatcher views responsive.
+Context: 
+>design the backend for real-time location updates for Cymelle delivery trips and driver/rider activity. The system must support 500+ concurrent active trips or deliveries while keeping customer tracking, driver apps, and admin/dispatcher views responsive.
 
 The current Cymelle backend already has orders and rides. I would keep the existing REST APIs for lifecycle actions such as creating an order, requesting a ride, accepting a ride, completing a ride, and cancelling a ride. I would add a dedicated real-time location subsystem beside that API because location data has a different shape: high-frequency writes, low-latency reads, fan-out to multiple viewers, and short-lived live state.
 
