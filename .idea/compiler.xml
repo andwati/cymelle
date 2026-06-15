@@ -7,12 +7,13 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.5.15/dd1f197a202c7ea67c4fef05c3fe259b55fb2640/spring-boot-configuration-processor-3.5.15.jar" />
         </processorPath>
-        <module name="orders.main" />
+        <module name="com.andwati.orders.main" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="com.andwati.orders.main" options="-parameters" />
       <module name="orders" options="-parameters" />
       <module name="orders.main" options="-parameters" />
       <module name="orders.test" options="-parameters" />
