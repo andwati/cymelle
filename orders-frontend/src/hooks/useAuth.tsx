@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useState } from "react";
-import { login, logout, register } from "#/api/auth";
+import { createContext, useContext, useEffect, useState } from "react";
+import { getCurrentUser, login, logout, register } from "#/api/auth";
 import type { AuthUser, LoginRequest, RegisterRequest } from "#/types/auth";
 
 type AuthContextValue = {
@@ -21,6 +21,47 @@ export const authQueryKeys = {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const queryClient = useQueryClient();
 	const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
+	const [isLoading, setIsLoading] = useState(() => readStoredUser() !== null);
+	const userId = user?.id;
+
+	useEffect(() => {
+		let cancelled = false;
+
+		if (!userId) {
+			setIsLoading(false);
+			return;
+		}
+
+		setIsLoading(true);
+		getCurrentUser()
+			.then((currentUser) => {
+				if (cancelled) {
+					return;
+				}
+
+				persistUser(currentUser);
+				setUser(currentUser);
+				queryClient.setQueryData(authQueryKeys.me, currentUser);
+			})
+			.catch(() => {
+				if (cancelled) {
+					return;
+				}
+
+				persistUser(null);
+				setUser(null);
+				queryClient.clear();
+			})
+			.finally(() => {
+				if (!cancelled) {
+					setIsLoading(false);
+				}
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [queryClient, userId]);
 
 	const loginMutation = useMutation({
 		mutationFn: login,
@@ -60,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	const value: AuthContextValue = {
 		user,
-		isLoading: false,
+		isLoading,
 		login: loginMutation.mutateAsync,
 		register: registerMutation.mutateAsync,
 		logout: logoutUser,

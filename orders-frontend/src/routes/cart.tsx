@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CreditCard, ShoppingCart, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ApiError } from "#/api/client";
 import { AuthDialog } from "#/components/store/AuthDialog";
 import { QuantityStepper } from "#/components/store/QuantityStepper";
 import { SiteHeader } from "#/components/store/SiteHeader";
@@ -129,6 +130,15 @@ function CartPage() {
 			});
 			await navigate({ to: "/orders" });
 		} catch (error) {
+			if (error instanceof ApiError && error.status === 403) {
+				await logout();
+				setAuthMode("login");
+				toast.error("Sign in again", {
+					description: "Your session expired before checkout.",
+				});
+				return;
+			}
+
 			toast.error("Checkout failed", {
 				description:
 					error instanceof Error
